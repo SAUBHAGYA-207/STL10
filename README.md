@@ -1,13 +1,4 @@
 # 🧠 STL-10 Image Classification: Shrink or Sink Challenge
-
-## 👤 Team Information
-
-* **Team Member:** Saubhagya Ji Jaiswal
-* **Program:** Mechanical Engineering
-* **Institute:** Indian Institute of Technology (IIT) Patna
-
----
-
 ## 🏗️ 1. Model Architecture
 
 Our solution is based on a **Stem-Modified ResNet-18**, specifically adapted for low-resolution STL-10 images (96 × 96).
@@ -64,12 +55,13 @@ We implemented a **multi-stage Semi-Supervised Learning (SSL)** pipeline to leve
   ```
   Labeled + Pseudo-labeled data
 
+* Epochs: 50
   ```
 * Techniques used:
 
   * **RandAugment (N=2, M=9)**
   * **Label Smoothing (ε = 0.1)**
-* Epochs : 50
+
 ---
 
 ### 💎 Stage 4: SWA Refinement
@@ -110,7 +102,7 @@ To meet strict size constraints:
 | Metric                       | Result                    |
 | ---------------------------- | ------------------------- |
 | Test Accuracy (Single View)  | **82.66%**                |
-| Final Accuracy (10-View TTA) | **85.12%+**             |
+| Final Accuracy (10-View TTA) | **85.12%+ ✅**             |
 | Model File Size              | **~22.3 MB (.pth, FP16)** |
 | Parameters                   | **11.17 Million**         |
 
@@ -154,12 +146,24 @@ python test.py --data_dir ./data --model_path model.pth
 
 ---
 
+## 🖥️ 6. Training Environment
+
+The complete training pipeline was executed on the **Paramrudra HPC Cluster** available at **Indian Institute of Technology (IIT) Patna**.
+The cluster enabled efficient large-scale training, especially for:
+
+* Handling 100,000 unlabeled samples
+* Accelerating GPU-based deep learning workloads
+* Running multi-stage SSL and SWA efficiently
+
+---
+
 ## 🚀 Key Highlights
 
 * ✅ Efficient architecture tailored for small images
 * ✅ Strong use of semi-supervised learning
 * ✅ High accuracy with compact model size
 * ✅ Fully reproducible pipeline
+* ✅ Trained on high-performance computing infrastructure
 
 ---
 
@@ -174,5 +178,6 @@ python test.py --data_dir ./data --model_path model.pth
 ## 🙌 Acknowledgment
 
 This project was developed as part of the **Shrink or Sink Challenge**, focusing on achieving **high accuracy under strict model size constraints**.
+We also acknowledge the support of the **Paramrudra HPC Cluster at IIT Patna** for enabling efficient model training.
 
 ---
