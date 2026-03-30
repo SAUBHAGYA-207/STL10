@@ -56,7 +56,6 @@ We implemented a **multi-stage Semi-Supervised Learning (SSL)** pipeline to leve
   Labeled + Pseudo-labeled data
 
 * Epochs: 50
-  ```
 * Techniques used:
 
   * **RandAugment (N=2, M=9)**
@@ -72,8 +71,6 @@ We implemented a **multi-stage Semi-Supervised Learning (SSL)** pipeline to leve
   * Flatter minima
   * Improved generalization
   * Higher test accuracy
-
----
 
 ## 🧩 3. Compression Techniques
 
@@ -94,8 +91,6 @@ To meet strict size constraints:
     * PyTorch
     * NumPy
     * Python Random
-
----
 
 ## 📊 4. Results & Metrics
 
