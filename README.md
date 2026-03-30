@@ -102,8 +102,8 @@ To meet strict size constraints:
 | Metric                       | Result                    |
 | ---------------------------- | ------------------------- |
 | Test Accuracy (Single View)  | **82.66%**                |
-| Final Accuracy (10-View TTA) | **85.12%+ ✅**             |
-| Model File Size              | **~22.3 MB (.pth, FP16)** |
+| Final Accuracy (10-View TTA) | **85.12%**             |
+| Model File Size              | **=22.3 MB (.pth, FP16)** |
 | Parameters                   | **11.17 Million**         |
 
 ✔ Successfully crossed the **85% threshold**
