@@ -98,7 +98,7 @@ Loss = 0.3 × CE + 0.7 × KD
   * smaller model capacity
   * Top-K information loss
 
-## 🧩 3. Compression Techniques
+## 📊3. Results & Metrics
 
 | Model                        | Accuracy        | Size       |
 | ---------------------------- | --------------- | ---------- |
@@ -106,16 +106,7 @@ Loss = 0.3 × CE + 0.7 × KD
 | Semi-Supervised              | **86.51%**      | 42.7 MB    |
 | Distilled (Final Submission) | 79.92%          | **10.7MB** |
 
-## 📊 4. Results & Metrics
 
-| Metric                       | Result                    |
-| ---------------------------- | ------------------------- |
-| Test Accuracy (Single View)  | **82.66%**                |
-| Final Accuracy (10-View TTA) | **85.12%**             |
-| Model File Size              | **=22.3 MB (.pth, FP16)** |
-| Parameters                   | **11.17 Million**         |
-
-✔ Successfully crossed the **85% threshold**
 
 ---
 
