@@ -155,7 +155,7 @@ The cluster enabled efficient large-scale training, especially for:
 
 * Handling 100,000 unlabeled samples
 * Accelerating GPU-based deep learning workloads
-* Running multi-stage SSL and SWA efficiently
+* Running multi-stage SSL efficiently
 
 ---
 
