@@ -1,0 +1,131 @@
+==========================================
+SLURM_CLUSTER_NAME = paramaryabhatta
+SLURM_ARRAY_JOB_ID =
+SLURM_ARRAY_TASK_ID =
+SLURM_ARRAY_TASK_COUNT =
+SLURM_ARRAY_TASK_MAX =
+SLURM_ARRAY_TASK_MIN =
+SLURM_JOB_ACCOUNT = iitp
+SLURM_JOB_ID = 44426
+SLURM_JOB_NAME = stl10_pipeline
+SLURM_JOB_NODELIST = racn116
+SLURM_JOB_USER = saubhagyaj_iitp
+SLURM_JOB_UID = 65846
+SLURM_JOB_PARTITION = gpu
+SLURM_TASK_PID = 1892339
+SLURM_SUBMIT_DIR = /home/saubhagyaj_iitp/final
+SLURM_CPUS_ON_NODE = 8
+SLURM_NTASKS = 1
+SLURM_TASK_PID = 1892339
+==========================================
+---------------------------------------------------------
+HPC JOB STARTING: Tue Mar 31 12:20:17 IST 2026
+JOB ID: 44426
+NODE: racn116
+---------------------------------------------------------
+Tue Mar 31 12:20:27 2026
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 550.54.14              Driver Version: 550.54.14      CUDA Version: 12.4     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          Off |   00000000:3B:00.0 Off |                    0 |
+| N/A   55C    P0             83W /  300W |   66524MiB /  81920MiB |    100%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          Off |   00000000:5E:00.0 Off |                    0 |
+| N/A   48C    P0            131W /  300W |   29214MiB /  81920MiB |     49%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A   1797896      C   ...conda/envs/skd-train/bin/python3.10      61868MiB |
+|    0   N/A  N/A   1801010      C   ...itp/.conda/envs/skd-eval/bin/python       3478MiB |
+|    0   N/A  N/A   1890927      C   /home/apps/MLDL/DL-CondaPy3/bin/python       1156MiB |
+|    1   N/A  N/A   1791328      C   python                                       4552MiB |
+|    1   N/A  N/A   1797897      C   ...conda/envs/skd-train/bin/python3.10      24648MiB |
++-----------------------------------------------------------------------------------------+
+
+Using device: cuda
+Seed: 42
+
+🚀 Training Started...
+
+Epoch 005 | Test Accuracy: 25.90%
+✅ Best Model Saved! Accuracy: 25.90%
+
+Epoch 010 | Test Accuracy: 31.49%
+✅ Best Model Saved! Accuracy: 31.49%
+
+Epoch 015 | Test Accuracy: 40.06%
+✅ Best Model Saved! Accuracy: 40.06%
+
+Epoch 020 | Test Accuracy: 47.36%
+✅ Best Model Saved! Accuracy: 47.36%
+
+Epoch 025 | Test Accuracy: 41.76%
+Epoch 030 | Test Accuracy: 56.41%
+✅ Best Model Saved! Accuracy: 56.41%
+
+Epoch 035 | Test Accuracy: 52.34%
+Epoch 040 | Test Accuracy: 65.88%
+✅ Best Model Saved! Accuracy: 65.88%
+
+Epoch 045 | Test Accuracy: 65.50%
+Epoch 050 | Test Accuracy: 63.94%
+Epoch 055 | Test Accuracy: 62.29%
+Epoch 060 | Test Accuracy: 62.69%
+Epoch 065 | Test Accuracy: 69.85%
+✅ Best Model Saved! Accuracy: 69.85%
+
+Epoch 070 | Test Accuracy: 72.06%
+✅ Best Model Saved! Accuracy: 72.06%
+
+Epoch 075 | Test Accuracy: 77.96%
+✅ Best Model Saved! Accuracy: 77.96%
+
+Epoch 080 | Test Accuracy: 73.85%
+Epoch 085 | Test Accuracy: 77.28%
+Epoch 090 | Test Accuracy: 77.78%
+Epoch 095 | Test Accuracy: 79.28%
+✅ Best Model Saved! Accuracy: 79.28%
+
+Epoch 100 | Test Accuracy: 81.03%
+✅ Best Model Saved! Accuracy: 81.03%
+
+Epoch 105 | Test Accuracy: 81.84%
+✅ Best Model Saved! Accuracy: 81.84%
+
+Epoch 110 | Test Accuracy: 82.11%
+✅ Best Model Saved! Accuracy: 82.11%
+
+Epoch 115 | Test Accuracy: 83.11%
+✅ Best Model Saved! Accuracy: 83.11%
+
+Epoch 120 | Test Accuracy: 83.62%
+✅ Best Model Saved! Accuracy: 83.62%
+
+Epoch 125 | Test Accuracy: 83.53%
+Epoch 130 | Test Accuracy: 83.85%
+✅ Best Model Saved! Accuracy: 83.85%
+
+Epoch 135 | Test Accuracy: 84.25%
+✅ Best Model Saved! Accuracy: 84.25%
+
+Epoch 140 | Test Accuracy: 84.09%
+Epoch 145 | Test Accuracy: 83.86%
+Epoch 150 | Test Accuracy: 84.03%
+
+🔥 Training Completed!
+🏆 Final Best Accuracy: 84.25%
+📊 Last Epoch Accuracy: 84.03%
+---------------------------------------------------------
+VERIFYING MODEL:
+---------------------------------------------------------
+HPC JOB FINISHED: Tue Mar 31 12:44:47 IST 2026

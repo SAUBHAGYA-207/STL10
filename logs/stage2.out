@@ -1,0 +1,86 @@
+==========================================
+SLURM_CLUSTER_NAME = paramaryabhatta
+SLURM_ARRAY_JOB_ID =
+SLURM_ARRAY_TASK_ID =
+SLURM_ARRAY_TASK_COUNT =
+SLURM_ARRAY_TASK_MAX =
+SLURM_ARRAY_TASK_MIN =
+SLURM_JOB_ACCOUNT = iitp
+SLURM_JOB_ID = 44544
+SLURM_JOB_NAME = stl10_pipeline
+SLURM_JOB_NODELIST = racn116
+SLURM_JOB_USER = saubhagyaj_iitp
+SLURM_JOB_UID = 65846
+SLURM_JOB_PARTITION = gpu
+SLURM_TASK_PID = 1898270
+SLURM_SUBMIT_DIR = /home/saubhagyaj_iitp/final
+SLURM_CPUS_ON_NODE = 8
+SLURM_NTASKS = 1
+SLURM_TASK_PID = 1898270
+==========================================
+---------------------------------------------------------
+HPC JOB STARTING: Tue Mar 31 12:57:34 IST 2026
+JOB ID: 44544
+NODE: racn116
+---------------------------------------------------------
+Tue Mar 31 12:57:45 2026
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 550.54.14              Driver Version: 550.54.14      CUDA Version: 12.4     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          Off |   00000000:3B:00.0 Off |                    0 |
+| N/A   46C    P0             80W /  300W |   65362MiB /  81920MiB |    100%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          Off |   00000000:5E:00.0 Off |                    0 |
+| N/A   57C    P0            107W /  300W |   29214MiB /  81920MiB |     66%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A   1797896      C   ...conda/envs/skd-train/bin/python3.10      61868MiB |
+|    0   N/A  N/A   1801010      C   ...itp/.conda/envs/skd-eval/bin/python       3478MiB |
+|    1   N/A  N/A   1791328      C   python                                       4552MiB |
+|    1   N/A  N/A   1797897      C   ...conda/envs/skd-train/bin/python3.10      24648MiB |
++-----------------------------------------------------------------------------------------+
+
+🚀 Semi-Supervised Stage Started
+
+✅ Loaded Teacher Model
+🔍 Generating pseudo-labels (threshold=0.95)...
+✅ Selected 6800 high-confidence samples
+
+🚀 Training Student Model...
+
+Epoch 5 | Test Accuracy: 77.67%
+✅ Saved Best Student (77.67%)
+Epoch 10 | Test Accuracy: 80.05%
+✅ Saved Best Student (80.05%)
+Epoch 15 | Test Accuracy: 80.33%
+✅ Saved Best Student (80.33%)
+Epoch 20 | Test Accuracy: 82.56%
+✅ Saved Best Student (82.56%)
+Epoch 25 | Test Accuracy: 83.34%
+✅ Saved Best Student (83.34%)
+Epoch 30 | Test Accuracy: 84.04%
+✅ Saved Best Student (84.04%)
+Epoch 35 | Test Accuracy: 85.99%
+✅ Saved Best Student (85.99%)
+Epoch 40 | Test Accuracy: 86.00%
+✅ Saved Best Student (86.00%)
+Epoch 45 | Test Accuracy: 86.21%
+✅ Saved Best Student (86.21%)
+Epoch 50 | Test Accuracy: 86.51%
+✅ Saved Best Student (86.51%)
+
+---------------------------------------------------------
+VERIFYING MODEL:
+---------------------------------------------------------
+HPC JOB FINISHED: Tue Mar 31 13:19:56 IST 2026

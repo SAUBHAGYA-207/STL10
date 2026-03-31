@@ -1,84 +1,115 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
-from model import get_stl_resnet18
+from torch.utils.data import DataLoader
 import argparse
 import os
 
-def test():
-    # Rule 2.7.2: Dataset directory must be a configurable input [cite: 72, 93]
-    parser = argparse.ArgumentParser(description='STL-10 Test Evaluation')
-    parser.add_argument('--data_dir', type=str, default='./data', help='Path to STL-10 dataset')
-    parser.add_argument('--model_path', type=str, default='model.pth', help='Path to model.pth')
-    args, unknown = parser.parse_known_args()
+from model import get_stl_resnet18, get_student_model
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    
-    # Load Architecture from model.py [cite: 81, 88]
-    model = get_stl_resnet18().to(device)
-    
-    # Load Weights [cite: 76]
-    if not os.path.exists(args.model_path):
-        print(f"Error: Model file {args.model_path} not found.")
-        return
 
-    state_dict = torch.load(args.model_path, map_location=device)
-    model.load_state_dict(state_dict)
-    
-    # Set to FP16 and Eval mode for consistency with train.py saving
-    model.half().eval()
-
-    # Normalization constants used during training
-    norm = transforms.Normalize((0.4467, 0.4398, 0.4066), (0.2603, 0.2566, 0.2713))
-    
-    # Load Test Set [cite: 28, 94]
-    testset = torchvision.datasets.STL10(root=args.data_dir, split='test', download=True)
-    
-    correct = 0
-    total = len(testset)
-    
-    print(f"🚀 Starting 10-View TTA Evaluation on {total} images...")
+# -----------------------------
+# Evaluation function
+# -----------------------------
+def evaluate(model, loader, device):
+    model.eval()
+    correct, total = 0, 0
 
     with torch.no_grad():
-        for i in range(total):
-            img, target = testset[i]
-            
-            # 10-View TTA: 5 Crops + 5 Horizontal Flips of those crops
-            # Using 88x88 crops resized back to 96x96 to maintain detail
-            crops = transforms.functional.five_crop(img, 88) 
-            views = []
-            for c in crops:
-                resized = transforms.functional.resize(c, (96, 96))
-                # Add original crop
-                views.append(norm(transforms.ToTensor()(resized).half()))
-                # Add flipped crop
-                views.append(norm(transforms.ToTensor()(transforms.functional.hflip(resized)).half()))
-            
-            # Create a batch of 10 views for a single image
-            batch = torch.stack(views).to(device)
-            
-            # Get predictions and average the probabilities (Ensemble effect)
-            outputs = model(batch)
-            avg_probs = F.softmax(outputs.float(), dim=1).mean(0)
-            
-            if avg_probs.argmax().item() == target:
-                correct += 1
-            
-            if (i + 1) % 1000 == 0:
-                print(f"Evaluated {i + 1}/{total} images...")
+        for x, y in loader:
+            x, y = x.to(device), y.to(device)
+            pred = model(x).argmax(1)
+            total += y.size(0)
+            correct += (pred == y).sum().item()
 
-    # Rule 6.2.3: Final classification accuracy computation [cite: 94]
-    final_acc = 100. * correct / total
-    print("\n" + "="*40)
-    print(f"🌟 FINAL TEST ACCURACY: {final_acc:.2f}%")
-    print("="*40)
-    
-    if final_acc >= 85.0:
-        print("✅ Status: QUALIFIED for Accuracy Points")
+    return 100 * correct / total
+
+
+# -----------------------------
+# Load model safely
+# -----------------------------
+def load_model(path, device):
+    assert os.path.exists(path), f"❌ File not found: {path}"
+
+    # Decide architecture
+    if "model.pth" in path:
+        print("📦 Loading KD Student Model")
+        model = get_student_model()
     else:
-        print("❌ Status: BELOW 85% THRESHOLD (Zero Accuracy Points)")
+        print("📦 Loading ResNet18 Model")
+        model = get_stl_resnet18()
 
-if __name__ == '__main__':
-    test()
+    model.load_state_dict(torch.load(path, map_location=device))
+    model = model.to(device)
+    model.eval()
+
+    return model
+
+
+# -----------------------------
+# Main
+# -----------------------------
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', default='./data')
+    parser.add_argument('--ckpt_dir', default='./checkpoints')
+
+    args = parser.parse_args()
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"\nUsing device: {device}\n")
+
+    # -----------------------------
+    # Dataset
+    # -----------------------------
+    norm = transforms.Normalize((0.4467, 0.4398, 0.4066),
+                                (0.2603, 0.2566, 0.2713))
+
+    test_tf = transforms.Compose([
+        transforms.ToTensor(),
+        norm
+    ])
+
+    testset = torchvision.datasets.STL10(
+        root=args.data_dir,
+        split='test',
+        transform=test_tf,
+        download=False
+    )
+
+    testloader = DataLoader(
+        testset,
+        batch_size=100,
+        shuffle=False,
+        num_workers=4
+    )
+
+    print("✅ Dataset Loaded\n")
+
+    # -----------------------------
+    # Evaluate models
+    # -----------------------------
+    paths = {
+        "Supervised": os.path.join(args.ckpt_dir, "best_model.pth"),
+        "Semi-Supervised": os.path.join(args.ckpt_dir, "best_student.pth"),
+        "KD Final": "model.pth"
+    }
+
+    for name, path in paths.items():
+        if not os.path.exists(path):
+            print(f"⚠️ Skipping {name} (not found)")
+            continue
+
+        print(f"\n🔍 Evaluating {name} Model")
+        model = load_model(path, device)
+        acc = evaluate(model, testloader, device)
+
+        size_mb = os.path.getsize(path) / (1024 * 1024)
+
+        print(f"📊 Accuracy: {acc:.2f}%")
+        print(f"📦 Size: {size_mb:.2f} MB")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,59 +1,74 @@
 # 🧠 STL-10 Image Classification: Shrink or Sink Challenge
 ## 🏗️ 1. Model Architecture
 
-Our solution is based on a **Stem-Modified ResNet-18**, specifically adapted for low-resolution STL-10 images (96 × 96).
-
-### 🔧 Key Modifications:
-
-* **Modified Stem:**
-  Replaced the standard `7×7 Conv (stride=2)` with a `3×3 Conv (stride=1)` to preserve spatial information.
-
-* **Removed MaxPooling:**
-  The initial MaxPool layer was replaced with an Identity layer to avoid early feature loss.
-
-* **Resolution-Aware Design:**
-  Adjustments ensure better feature extraction for small images compared to ImageNet-style architectures.
-
-* **Size Optimization (FP16):**
-  Final model weights stored in **half precision (float16)** → ~50% reduction in file size without accuracy loss.
+The training pipeline is divided into **three major stages**:
 
 ---
 
-## 🔄 2. Training Procedure
+## 🔵 Stage 1: Supervised Learning
 
-We implemented a **multi-stage Semi-Supervised Learning (SSL)** pipeline to leverage unlabeled data.
+### 📖 Description
 
-### 🚀 Stage 1: Supervised Baseline
+A modified **ResNet-18** is trained on labeled STL-10 data.
 
-* Dataset: 5,000 labeled images
-* Augmentations:
+### 🔧 Key Modifications
 
-  * RandomCrop
-  * HorizontalFlip
-  * ColorJitter
-* Epochs: 100
-* Output: Initial **Teacher Model**
+* 7×7 conv → **3×3 conv**
+* Removed max-pooling layer
+* Label smoothing (0.1)
+* Cosine Annealing LR
+* Strong augmentation (RandAugment)
+
+### 📊 Results
+
+| Metric     | Value      |
+| ---------- | ---------- |
+| Accuracy   | **84.25%** |
+| Model Size | **42.7 MB**|
+| Epochs     | 150        |
+
+### 🧠 Insight
+
+* Strong baseline
+* Captures core patterns
+* Acts as **teacher model**
 
 ---
 
-### 🔍 Stage 2: Pseudo-Labeling
+## 🟡 Stage 2: Semi-Supervised Learning (Pseudo-Labeling)
 
-* Scanned 100,000 unlabeled images
-* Selected samples with:
+### 📖 Description
 
-  ```
-  Softmax Confidence > 0.90
-  ```
-* Generated **Pseudo Labels** and expanded training dataset
+The trained teacher model is used to generate labels for **unlabeled data**.
+
+### ⚙️ Process
+
+1. Predict on unlabeled dataset
+2. Select samples with confidence > **0.95**
+3. Combine with original training data
+4. Retrain model
+
+### 📊 Results
+
+| Metric     | Value      |
+| ---------- | ---------- |
+| Accuracy   | **86.51%** |
+| Model Size | **42.7 MB**|
+| Epochs     | 50         |
+
+### 🧠 Insight
+
+* Utilizes unlabeled data effectively
+* Improves generalization
+* Produces a stronger **teacher model**
 
 ---
 
-### 🏃 Stage 3: 85% Target Sprint
+## 🔴 Stage 3: Knowledge Distillation (Top-K Logits)
 
-* Trained from scratch on:
+### 📖 Description
 
-  ```
-  Labeled + Pseudo-labeled data
+A **smaller student model** learns from the teacher using **Top-K logits (k=4)**.
 
 * Epochs: 50
 * Techniques used:
@@ -63,34 +78,33 @@ We implemented a **multi-stage Semi-Supervised Learning (SSL)** pipeline to leve
 
 ---
 
-### 💎 Stage 4: SWA Refinement
+```text
+Loss = 0.3 × CE + 0.7 × KD
+```
 
-* Applied **Stochastic Weight Averaging (SWA)** for final 10 epochs
-* Benefits:
+### 📊 Results
 
-  * Flatter minima
-  * Improved generalization
-  * Higher test accuracy
+| Metric     | Value       |
+| ---------- | ----------- |
+| Accuracy   | **79.92%**  |
+| Model Size | **10.7 MB** |
+| Epochs     | 150         |
+
+### 🧠 Insight
+
+* Significant compression (~73% reduction)
+* Some accuracy drop due to:
+
+  * smaller model capacity
+  * Top-K information loss
 
 ## 🧩 3. Compression Techniques
 
-To meet strict size constraints:
-
-* **Architectural Efficiency**
-
-  * Removed unnecessary layers (e.g., MaxPool)
-
-* **FP16 Quantization**
-
-  * Converted weights: `float32 → float16`
-
-* **Reproducibility**
-
-  * Fixed random seed = `42` across:
-
-    * PyTorch
-    * NumPy
-    * Python Random
+| Model                        | Accuracy        | Size       |
+| ---------------------------- | --------------- | ---------- |
+| Supervised                   | 84.25%          | 42.7 MB    |
+| Semi-Supervised              | **86.51%**      | 42.7 MB    |
+| Distilled (Final Submission) | 79.92%          | **10.7MB** |
 
 ## 📊 4. Results & Metrics
 
@@ -105,38 +119,40 @@ To meet strict size constraints:
 
 ---
 
-## 🔁 5. Reproduction Instructions
+# ⚙️ Setup Guide
 
-### ⚙️ Install Dependencies
+## 🔹 1. Clone / Setup Environment
 
 ```bash
-pip install -r requirements.txt
+pip install torch torchvision
 ```
 
 ---
 
-### 🏋️ Training
+## 🔹 2. Dataset
 
-Run the full pipeline:
+Download STL-10:
 
-```bash
-python train.py --data_dir ./data
-```
-
-Includes:
-
-```
-Baseline → Pseudo-labeling → SWA refinement
+```python
+torchvision.datasets.STL10(root='./data', download=True)
 ```
 
 ---
 
-### 🧪 Testing / Inference (with TTA)
+## 🔹 3. Training
 
-Evaluate using **10-View Test-Time Augmentation**:
+Run full pipeline:
 
 ```bash
-python test.py --data_dir ./data --model_path model.pth
+python train.py --data_dir ./data --save_dir ./checkpoints
+```
+
+---
+
+## 🔹 4. Testing
+
+```bash
+python test.py --data_dir ./data --ckpt_dir ./checkpoints
 ```
 
 ---
@@ -162,15 +178,16 @@ The cluster enabled efficient large-scale training, especially for:
 
 ---
 
-## 📌 Notes
+# 🔥 Key Learnings
 
-* Ensure dataset is available in `./data`
-* Final model saved as `model.pth`
-* Designed for both **performance + size optimization**
+* Semi-supervised learning provides **significant gains**
+* Knowledge distillation enables **efficient compression**
+* Model capacity is critical for KD success
+* Top-K distillation trades **accuracy for efficiency**
 
 ---
 
-## 🙌 Acknowledgment
+# 🚀 Future Improvements
 
 This project was developed as part of the **Shrink or Sink Challenge**, focusing on achieving **high accuracy under strict model size constraints**.
 We also acknowledge the support of the **Paramrudra HPC Cluster at IIT Patna** for enabling efficient model training.
